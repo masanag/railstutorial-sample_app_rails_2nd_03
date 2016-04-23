@@ -2,6 +2,28 @@ require 'spec_helper'
 
 describe 'UserPages' do
   subject { page }
+
+  describe 'index' do
+    let(:user) { create :user }
+    before do
+      sign_in create(:user)
+      visit users_path
+    end
+
+    it { should have_title 'All users' }
+    it { should have_content 'All users' }
+
+    describe 'pagination' do
+      before(:all) { 30.times { create :user } }
+      after(:all) { User.delete_all }
+
+      it { should have_selector('div.pagination') }
+      User.paginate(page: 1).each do |user|
+        expect(page).to have_selector('li', text: user.name)
+      end
+    end
+  end
+
   describe 'profile page' do
     let(:user) { create(:user) }
     before { visit user_path(user) }
