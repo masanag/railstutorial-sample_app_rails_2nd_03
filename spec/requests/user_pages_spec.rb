@@ -139,4 +139,21 @@ describe 'UserPages' do
       specify { expect(user.reload.email).to eq new_email }
     end
   end
+
+  describe 'following/followers' do
+    let(:user) { create :user }
+    let(:other_user) { create :user }
+    before { user.follow!(other_user) }
+
+    describe 'followed users' do
+      before do
+        sign_in user
+        visit following_user_path(user)
+      end
+
+      it { should have_title(full_title('Following')) }
+      it { should have_selector('h3', text: 'Following') }
+      it { should have_link(other_user.name, href: user_path(other_user)) }
+    end
+  end
 end
