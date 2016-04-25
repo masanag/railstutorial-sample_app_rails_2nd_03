@@ -17,6 +17,11 @@ describe User do
   it { should respond_to :admin }
   it { should respond_to :microposts }
   it { should respond_to :feed }
+  it { should respond_to :relationships }
+  it { should respond_to :followed_users }
+  it { should respond_to :following? }
+  it { should respond_to :follow! }
+  it { should respond_to :unfollow! }
 
   it { should be_valid }
   it { should_not be_admin }
@@ -146,5 +151,16 @@ describe User do
       its(:feed) { should include(older_micropost) }
       its(:feed) { should_not include(unfollowed_post) }
     end
+  end
+
+  describe 'following' do
+    let(:other_user) { create :user }
+    before do
+      @user.save
+      @user.follow!(other_user)
+    end
+
+    it { should be_following(other_user) }
+    its(:followed_users) { should include(other_user) }
   end
 end
